@@ -13,6 +13,11 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+    next();
+});
+
 // Obtener el nombre de todos los tequileros
 app.get('/api/tequileros', (req, res) => {
     var result = [];
@@ -59,11 +64,61 @@ app.get('/api/tequileros/:tequilero', (req, res) => {
 // Si no hay tequilas regresar sólo un arreglo vacío
 // Ejemplo: get(api/tequila/:sku)
 
+app.get('api/tequila/:sku', (req, res) => {
+    var result = [];
+    var data = db.tequileros;
+
+    for(var i = 0; i < data.length; i++){
+        if(data[i].name === req.params.tequilero){
+            for(var j = 0; j < data.length;j++){
+                if(data[i].name === req.params.tequilas){
+                    result = data[i].sku;
+                    console.log(result);
+                }
+            }
+        }
+    }
+    
+    // Falta añadir el regresar arreglo vacío
+
+    res.status(200).send({
+        success: 'true',
+        message: 'tequila sku retrieved successfuly',
+        tequileros: result
+    });
+});
+
+
 // Obtener la información de un tequila dado su SKU, un usuario y una contraseña (validar con la db)
 // Ejemplo: get(api/tequila/:sku) && el user y pwd se reciben en un json (utilizar bodyParser aquí)
 
+app.get('api/tequila/:sku', (req, res) => {
+    var result = [];
+    var data = db.tequileros;
+
+    res.status(200).send({
+        success: 'true',
+        message: 'tequila sku usr pwd retrieved successfuly',
+        tequileros: result
+    });
+});
+
 // Obtener el historial de un usuario dado su usuario y contraseña
 // Ejemplo: get(api/historial) && el user y pwd se reciben en un json (utilizar bodyParser aquí)
+
+app.get('api/historial', (req, res) => {
+    var result = [];
+    var data = db.tequileros;
+
+    res.status(200).send({
+        success: 'true',
+        message: 'historial retrieved successfuly',
+        tequileros: result
+    });
+});
+
+/// asdsaddsa
+
 
 const PORT = 5000;
 app.listen(PORT, () => {
