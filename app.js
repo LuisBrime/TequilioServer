@@ -60,62 +60,107 @@ app.get('/api/tequileros/:tequilero', (req, res) => {
     });
 });
 
-// Obtener la información de un tequila dado su SKU
-// Si no hay tequilas regresar sólo un arreglo vacío
-// Ejemplo: get(api/tequila/:sku)
-
-app.get('api/tequila/:sku', (req, res) => {
+//Obtener datos botella con sku
+app.get('/api/tequileros/tequila/:sku', (req, res) => {
     var result = [];
     var data = db.tequileros;
-
     for(var i = 0; i < data.length; i++){
-        if(data[i].name === req.params.tequilero){
-            for(var j = 0; j < data.length;j++){
-                if(data[i].name === req.params.tequilas){
-                    result = data[i].sku;
-                    console.log(result);
+        
+            for(var j = 0; j < data[i].tequilas.length;j++){
+
+                if(data[i].tequilas[j].sku === req.params.sku){
+                    result = data[i].tequilas[j];
+
+                    return res.status(200).send({
+                        success: 'true',
+                        message: 'tequila sku retrieved successfuly',
+                        tequila: result
+                    });
                 }
             }
-        }
     }
-    
-    // Falta añadir el regresar arreglo vacío
 
-    res.status(200).send({
-        success: 'true',
-        message: 'tequila sku retrieved successfuly',
-        tequileros: result
+
+    // Falta añadir el regresar arreglo vacío
+    res.status(400).send({
+        success: 'false',
+        message: 'not found'
     });
 });
-
 
 // Obtener la información de un tequila dado su SKU, un usuario y una contraseña (validar con la db)
 // Ejemplo: get(api/tequila/:sku) && el user y pwd se reciben en un json (utilizar bodyParser aquí)
 
-app.get('api/tequila/:sku', (req, res) => {
+app.get('/api/tequileros/tequila/:sku/:usr/:pwd', (req, res) => {
     var result = [];
+    var usrdata = db.users;
     var data = db.tequileros;
+    var loginsku = {
+        user: req.body.user,
+        pwd: req.body.pwd
+    }
 
-    res.status(200).send({
-        success: 'true',
-        message: 'tequila sku usr pwd retrieved successfuly',
-        tequileros: result
+    for(var x = 0; x < usrdata.length; x++) {
+        if(usrdata[x].user === req.params.usr) {
+            if(usrdata[x].pwd === req.params.pwd) {
+                for(var i = 0; i < data.length; i++){
+        
+                    for(var j = 0; j < data[i].tequilas.length;j++){
+        
+                        if(data[i].tequilas[j].sku === req.params.sku){
+                            result = data[i].tequilas[j];
+        
+                            return res.status(200).send({
+                                success: 'true',
+                                message: 'tequila sku retrieved successfuly',
+                                tequila: result
+                            });
+                        }
+                    }
+            }
+            }else {
+                console.log("Wrong pwd");
+            }
+        }else {
+            console.log("Wrong usr");
+        }
+    }
+
+
+    // Falta añadir el regresar arreglo vacío
+
+    res.status(400).send({
+        success: 'false',
+        message: 'usr or sku not found',
     });
 });
 
 // Obtener el historial de un usuario dado su usuario y contraseña
 // Ejemplo: get(api/historial) && el user y pwd se reciben en un json (utilizar bodyParser aquí)
 
-app.get('api/historial', (req, res) => {
+app.get('/api/users/historial/:usr/:pwd', (req, res) => {
     var result = [];
-    var data = db.tequileros;
+    var data = db.users;
 
-    res.status(200).send({
-        success: 'true',
-        message: 'historial retrieved successfuly',
-        tequileros: result
+    for(var x = 0; x < data.length; x++) {
+        if(data[x].user === req.params.usr) {
+            if(data[x].pwd === req.params.pwd) {
+                result = data[x].historial;
+                res.status(200).send({
+                    success: 'true',
+                    message: 'historial retrieved successfuly',
+                    historial: result
+                });
+            }
+        }
+    }
+
+    res.status(400).send({
+        success: 'false',
+        message: 'historial not found',
     });
 });
+
 
 /// asdsaddsa
 
